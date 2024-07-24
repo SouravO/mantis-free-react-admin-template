@@ -38,6 +38,15 @@ const dashboard = {
       url: '/settings',
       // icon: icons.,
       breadcrumbs: false
+    },
+    // Logout Button
+    {
+      id: 'logout',
+      title: 'Logout',
+      type: 'item',
+      url: '/login',  // Replace with your logout URL
+      icon: icons.Logout, // Optionally add an icon for logout
+      breadcrumbs: false
     }
   ]
 };

@@ -74,7 +74,7 @@ export default function Profile() {
 
   return (
     <Box sx={{ flexShrink: 0, ml: 0.75 }}>
-      <ButtonBase
+      {/* <ButtonBase
         sx={{
           p: 0.25,
           bgcolor: open ? iconBackColorOpen : 'transparent',
@@ -94,8 +94,8 @@ export default function Profile() {
             John Doe
           </Typography>
         </Stack>
-      </ButtonBase>
-      <Popper
+      </ButtonBase> */}
+      {/* <Popper
         placement="bottom-end"
         open={open}
         anchorEl={anchorRef.current}
@@ -180,7 +180,7 @@ export default function Profile() {
             </Paper>
           </Transitions>
         )}
-      </Popper>
+      </Popper> */}
     </Box>
   );
 }

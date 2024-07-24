@@ -20,6 +20,7 @@ import Typography from '@mui/material/Typography';
 // third party
 import * as Yup from 'yup';
 import { Formik } from 'formik';
+import { request, gql } from 'graphql-request';
 
 // project import
 import AnimateButton from 'components/@extended/AnimateButton';
@@ -28,8 +29,6 @@ import AnimateButton from 'components/@extended/AnimateButton';
 import EyeOutlined from '@ant-design/icons/EyeOutlined';
 import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
 import FirebaseSocial from './FirebaseSocial';
-
-// ============================|| JWT - LOGIN ||============================ //
 
 export default function AuthLogin({ isDemo = false }) {
   const [checked, setChecked] = React.useState(false);
@@ -45,13 +44,43 @@ export default function AuthLogin({ isDemo = false }) {
     event.preventDefault();
   };
 
-  const handleLogin = (values, { setErrors, setSubmitting }) => {
-    if (values.email === 'test@gmail.com' && values.password === '12341234') {
-      setLoginSuccess(true);
-      navigate('menu');
-    } else {
+  const handleLogin = async (values, { setErrors, setSubmitting }) => {
+    const endpoint = 'https://imenu.electronikmedia.com/graphql'; // Replace with your GraphQL endpoint
+    const mutation = gql`
+      mutation Login($username: String!, $password: String!) {
+        login(username: $username, password: $password) {
+          id
+          username
+          token
+        }
+      }
+    `;
+
+    try {
+      console.log('Attempting to log in with:', values);
+      console.log('Attempting to log :', mutation);
+      
+      const data = await request(endpoint, mutation, {
+        username: values.email,
+        password: values.password,
+      });
+    
+
+      console.log('Response data:', data);
+
+      if (data && data.login && data.login.token) {
+        setLoginSuccess(true);
+        // Store the token (localStorage or any other storage mechanism)
+        localStorage.setItem('token', data.login.token);
+        navigate('/menu'); // Redirect to menu page after successful login
+      } else {
+        setErrors({ submit: 'Invalid login credentials' });
+      }
+    } catch (error) {
       setErrors({ submit: 'Invalid login credentials' });
+      console.error('Login error:', error);
     }
+
     setSubmitting(false);
   };
 
@@ -66,11 +95,11 @@ export default function AuthLogin({ isDemo = false }) {
           initialValues={{
             email: '',
             password: '',
-            submit: null
+            submit: null,
           }}
           validationSchema={Yup.object().shape({
-            email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
-            password: Yup.string().max(255).required('Password is required')
+            // email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
+            // password: Yup.string().max(255).required('Password is required'),
           })}
           onSubmit={handleLogin}
         >
@@ -104,7 +133,7 @@ export default function AuthLogin({ isDemo = false }) {
                     <OutlinedInput
                       fullWidth
                       error={Boolean(touched.password && errors.password)}
-                      id="-password-login"
+                      id="password-login"
                       type={showPassword ? 'text' : 'password'}
                       value={values.password}
                       name="password"
